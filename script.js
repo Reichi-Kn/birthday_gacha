@@ -4,15 +4,19 @@
    設定（ここを編集してカスタマイズできます）
    ========================================================= */
 const CONFIG = {
+  // プレゼント（番号）の総数。20個以外にしたい場合はここを変更します。
   totalCount: 20,
 
-  // 番号 → ランクの対応表。ここだけ編集すれば変更できます。
-  // 例:「7番をGOLDに変更」→ 7: "gold" と書き換えるだけでOK
-  capsuleRanks: {
-    1: "green",  2: "red",    3: "green",  4: "green",  5: "gold",
-    6: "green",  7: "red",    8: "green",  9: "green",  10: "red",
-    11: "green", 12: "gold",  13: "green", 14: "red",   15: "green",
-    16: "green", 17: "red",   18: "green", 19: "green", 20: "gold",
+  // 各ランクの「出やすさ」の重み。
+  // 実際の確率 = その値 ÷ 合計値 になります（合計は100でなくてOK）。
+  // 例: green:60, red:30, gold:10 → GREEN60% / RED30% / GOLD10%
+  // ランクの種類を増減したい場合は、この中に行を足したり消したりできます
+  // （例えば "silver" を追加する場合は、silver_close.png / silver_open.png も
+  // images フォルダに用意し、CONFIG.images にもパスを追記してください）。
+  rankWeights: {
+    green: 60,
+    red: 30,
+    gold: 10,
   },
 
   images: {
@@ -106,8 +110,24 @@ function remainingNumbers(){
   return all;
 }
 
-function rankOf(number){
-  return CONFIG.capsuleRanks[number] || "green";
+// CONFIG.rankWeights にもとづいて、重み付きランダムでランクを1つ選びます。
+// 番号とは切り離して、引くたびに毎回抽選します（＝これが「出る確率」です）。
+function pickRank(){
+  const entries = Object.entries(CONFIG.rankWeights).filter(([, w]) => w > 0);
+
+  if(entries.length === 0){
+    console.warn("rankWeights が空です。green を返します。");
+    return "green";
+  }
+
+  const total = entries.reduce((sum, [, w]) => sum + w, 0);
+  let r = Math.random() * total;
+
+  for(const [rank, w] of entries){
+    if(r < w) return rank;
+    r -= w;
+  }
+  return entries[entries.length - 1][0]; // 端数対策のフォールバック
 }
 
 /* =========================================================
@@ -194,7 +214,7 @@ function onDrawTapped(){
   drawBtn.disabled = true;
 
   const number = remaining[Math.floor(Math.random() * remaining.length)];
-  const rank = rankOf(number);
+  const rank = pickRank();
   currentDraw = { number, rank };
 
   playSound("sndGacha");
