@@ -19,6 +19,14 @@ const CONFIG = {
     gold: 10,
   },
 
+  // 特定の番号だけランクを固定したい場合はここに追加します。
+  // ここに書いた番号は必ず指定したランクで出ます（確率抽選の対象外）。
+  // 書いていない番号は、上の rankWeights の確率で抽選されます。
+  // 例:「7番は必ずGOLDにしたい」→ 7: "gold",
+  numberRankOverrides: {
+    // 7: "gold",
+  },
+
   images: {
     gacha: "images/gacha.png",
     green_close: "images/green_close.png",
@@ -110,8 +118,15 @@ function remainingNumbers(){
   return all;
 }
 
+// 番号ごとのランクを決定します。
+// numberRankOverrides に指定があればそれを優先し、無ければ確率抽選します。
+function rankForNumber(number){
+  const fixed = CONFIG.numberRankOverrides[number];
+  if(fixed) return fixed;
+  return pickRank();
+}
+
 // CONFIG.rankWeights にもとづいて、重み付きランダムでランクを1つ選びます。
-// 番号とは切り離して、引くたびに毎回抽選します（＝これが「出る確率」です）。
 function pickRank(){
   const entries = Object.entries(CONFIG.rankWeights).filter(([, w]) => w > 0);
 
@@ -214,7 +229,7 @@ function onDrawTapped(){
   drawBtn.disabled = true;
 
   const number = remaining[Math.floor(Math.random() * remaining.length)];
-  const rank = pickRank();
+  const rank = rankForNumber(number);
   currentDraw = { number, rank };
 
   playSound("sndGacha");
