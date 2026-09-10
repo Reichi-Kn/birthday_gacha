@@ -1,0 +1,668 @@
+/* =========================================================
+   Birthday Gacha — dusty lavender / soft mauve / warm ivory
+   ========================================================= */
+
+:root{
+  --ivory:        #FAF6F1;
+  --ivory-deep:   #F1E9E8;
+  --lavender:     #D9CBE4;
+  --lavender-deep:#B7A0C7;
+  --mauve:        #C9A9B4;
+  --charcoal:     #423C48;
+  --charcoal-soft:#6B6373;
+  --line:         #E4D9E6;
+
+  --green:  #8FA382;
+  --green-deep: #71876A;
+  --red:    #B4726B;
+  --red-deep: #98594F;
+  --gold:   #C9A96E;
+  --gold-deep: #A9884C;
+
+  --radius-l: 26px;
+  --radius-m: 18px;
+  --radius-s: 12px;
+
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+
+  color-scheme: light;
+}
+
+*{ box-sizing: border-box; }
+
+html, body{
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  background: var(--ivory);
+}
+
+body{
+  min-height: 100dvh;
+  font-family: "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+  color: var(--charcoal);
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(circle at 18% 6%, rgba(217,203,228,0.55), transparent 55%),
+    radial-gradient(circle at 86% 92%, rgba(201,169,180,0.35), transparent 50%),
+    var(--ivory);
+}
+
+button{
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img{ -webkit-user-drag: none; user-select: none; }
+
+/* ---------------- App shell / screens ---------------- */
+
+#app{
+  position: relative;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+.screen{
+  display: none;
+  min-height: 100dvh;
+  width: 100%;
+  padding-top: calc(var(--safe-t) + 18px);
+  padding-bottom: calc(var(--safe-b) + 18px);
+  padding-left: calc(var(--safe-l) + 22px);
+  padding-right: calc(var(--safe-r) + 22px);
+}
+
+.screen.active{
+  display: flex;
+  flex-direction: column;
+  animation: screenIn 480ms cubic-bezier(.22,.68,.28,1) both;
+}
+
+@keyframes screenIn{
+  from{ opacity: 0; transform: translateY(10px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+.screen-inner{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.center-col{
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 18px;
+}
+
+/* ---------------- Gacha screen ---------------- */
+
+.top-bar{
+  text-align: center;
+  padding-top: 6px;
+  margin-bottom: 4px;
+}
+
+.eyebrow{
+  margin: 0 0 4px;
+  font-size: 12.5px;
+  letter-spacing: 0.18em;
+  color: var(--lavender-deep);
+  font-weight: 500;
+}
+
+.wordmark{
+  margin: 0;
+  font-family: "Shippori Mincho", serif;
+  font-weight: 600;
+  font-size: 25px;
+  letter-spacing: 0.04em;
+  color: var(--charcoal);
+}
+
+.stage{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 6px 0 2px;
+}
+
+.gacha-stand{
+  position: relative;
+  width: min(64vw, 260px);
+}
+
+.gacha-img{
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 18px 26px rgba(75, 60, 80, 0.18));
+  transform-origin: 50% 88%;
+}
+
+.gacha-stand.shaking .gacha-img{
+  animation: gachaShake 700ms cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes gachaShake{
+  0%   { transform: rotate(0deg); }
+  12%  { transform: rotate(-1.6deg); }
+  24%  { transform: rotate(1.6deg); }
+  36%  { transform: rotate(-1.3deg); }
+  48%  { transform: rotate(1.2deg); }
+  60%  { transform: rotate(-0.8deg); }
+  72%  { transform: rotate(0.6deg); }
+  84%  { transform: rotate(-0.3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.capsule-layer{
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  width: 46px;
+  height: 46px;
+  transform: translate(-50%, 0) scale(0.4);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.capsule-layer img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(60,50,60,0.25));
+}
+
+.capsule-layer.dropping{
+  animation: capsuleDrop 900ms cubic-bezier(.32,.02,.4,1.15) forwards;
+}
+
+@keyframes capsuleDrop{
+  0%   { opacity: 0; transform: translate(-50%, -30px) scale(0.35); }
+  15%  { opacity: 1; }
+  55%  { transform: translate(-50%, 40px) scale(0.9); }
+  72%  { transform: translate(-50%, 24px) scale(0.82); }
+  86%  { transform: translate(-50%, 34px) scale(0.86); }
+  100% { opacity: 1; transform: translate(-50%, 30px) scale(0.84); }
+}
+
+/* progress */
+
+.progress-block{
+  width: 100%;
+  margin: 6px 0 18px;
+}
+.progress-block.small{ margin: 2px 0 8px; }
+
+.progress-track{
+  height: 5px;
+  border-radius: 999px;
+  background: var(--ivory-deep);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.progress-fill{
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--lavender-deep), var(--mauve));
+  transition: width 600ms cubic-bezier(.22,.68,.28,1);
+}
+
+.progress-label{
+  margin: 0;
+  text-align: center;
+  font-size: 15px;
+  color: var(--charcoal-soft);
+  letter-spacing: 0.02em;
+}
+.progress-label span#progressCount,
+.progress-label span#resultProgressCount{
+  font-family: "Shippori Mincho", serif;
+  font-size: 19px;
+  color: var(--charcoal);
+  font-weight: 600;
+}
+.progress-slash{ margin: 0 3px; color: var(--lavender-deep); }
+
+/* buttons */
+
+.btn{
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-m);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease, background 160ms ease;
+}
+
+.btn-large{
+  width: 100%;
+  padding: 17px 20px;
+  font-size: 16.5px;
+}
+
+.btn-primary{
+  background: linear-gradient(180deg, #C6AFD6, var(--lavender-deep));
+  color: #FFFDFB;
+  box-shadow: 0 10px 20px rgba(140, 112, 156, 0.28), inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.btn-primary:active{
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 5px 12px rgba(140, 112, 156, 0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.btn-primary:disabled{
+  opacity: 0.55;
+  box-shadow: none;
+  cursor: default;
+}
+
+.btn-ghost{
+  background: var(--ivory-deep);
+  color: var(--charcoal-soft);
+  padding: 14px 18px;
+  font-size: 15px;
+}
+.btn-ghost:active{ transform: translateY(1px) scale(0.99); }
+
+.link-btn{
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--charcoal-soft);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  padding: 12px;
+  min-height: 44px;
+  cursor: pointer;
+  opacity: 0.7;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line);
+}
+.link-btn:active{ opacity: 1; }
+
+.dots-toggle{
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--lavender-deep);
+  font-size: 13.5px;
+  padding: 10px;
+  min-height: 40px;
+  margin: 2px auto 0;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.foot-link{
+  text-align: center;
+  padding-top: 6px;
+}
+
+/* number grid */
+
+.number-grid[hidden]{ display: none; }
+
+.number-grid{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 9px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+}
+
+.number-dot{
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ivory-deep);
+  color: var(--charcoal-soft);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+}
+
+.number-dot.drawn{
+  background: linear-gradient(180deg, #CBB7DA, var(--lavender-deep));
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ---------------- Capsule screen ---------------- */
+
+.capsule-caption{
+  font-size: 14.5px;
+  color: var(--charcoal-soft);
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.capsule-stage{
+  position: relative;
+  width: min(66vw, 260px);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.capsule-img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 22px rgba(70,58,72,0.2));
+}
+
+.capsule-close{
+  animation: capsuleAppear 620ms cubic-bezier(.22,.9,.32,1.2) both;
+}
+
+@keyframes capsuleAppear{
+  0%   { opacity: 0; transform: translateY(-18px) scale(0.7); }
+  55%  { opacity: 1; transform: translateY(6px) scale(1.04); }
+  75%  { transform: translateY(-2px) scale(0.99); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.capsule-close.floating{
+  animation: capsuleFloat 3400ms ease-in-out infinite;
+}
+@keyframes capsuleFloat{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(-8px); }
+}
+
+.capsule-close.opening{
+  animation: capsuleFadeOut 480ms ease forwards;
+}
+@keyframes capsuleFadeOut{
+  to{ opacity: 0; transform: scale(0.92) translateY(4px); filter: blur(2px) drop-shadow(0 16px 22px rgba(70,58,72,0.0)); }
+}
+
+.capsule-open{
+  opacity: 0;
+}
+.capsule-open.showing{
+  animation: capsuleOpenIn 620ms cubic-bezier(.22,.9,.3,1.1) forwards;
+}
+@keyframes capsuleOpenIn{
+  0%   { opacity: 0; transform: scale(0.88); }
+  60%  { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.number-reveal{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.number-reveal-value{
+  font-family: "Shippori Mincho", serif;
+  font-weight: 700;
+  font-size: 58px;
+  color: var(--charcoal);
+  text-shadow: 0 2px 14px rgba(255,255,255,0.9), 0 1px 0 rgba(255,255,255,0.6);
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(10px) scale(0.85);
+}
+
+.number-reveal.pop .number-reveal-value{
+  animation: numberPop 900ms cubic-bezier(.19,.86,.24,1.15) forwards;
+}
+@keyframes numberPop{
+  0%   { opacity: 0; filter: blur(6px); transform: translateY(10px) scale(0.8); }
+  55%  { opacity: 1; filter: blur(0px); transform: translateY(-3px) scale(1.08); }
+  100% { opacity: 1; filter: blur(0px); transform: translateY(0) scale(1); }
+}
+
+#openBtn{
+  max-width: 260px;
+  opacity: 0;
+}
+#openBtn.showing{
+  animation: btnFadeUp 460ms ease forwards;
+}
+@keyframes btnFadeUp{
+  from{ opacity: 0; transform: translateY(8px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+/* ---------------- Result screen ---------------- */
+
+.result-eyebrow{
+  margin: 0;
+  font-size: 12.5px;
+  letter-spacing: 0.24em;
+  color: var(--lavender-deep);
+  font-weight: 600;
+}
+
+.result-number{
+  font-family: "Shippori Mincho", serif;
+  font-weight: 700;
+  font-size: 76px;
+  line-height: 1;
+  color: var(--charcoal);
+  animation: numberPop 700ms cubic-bezier(.19,.86,.24,1.15) both;
+}
+
+.result-caption{
+  margin: 0;
+  font-size: 15.5px;
+  color: var(--charcoal-soft);
+  letter-spacing: 0.02em;
+}
+
+#backToGachaBtn{ max-width: 300px; margin-top: 6px; }
+
+/* ---------------- Last prize unlock ---------------- */
+
+.unlock-inner{ gap: 26px; }
+
+.unlock-step{
+  animation: screenIn 520ms cubic-bezier(.22,.68,.28,1) both;
+}
+
+.unlock-count{
+  font-family: "Shippori Mincho", serif;
+  font-size: 40px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--charcoal);
+}
+
+.unlock-text{
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--charcoal);
+  letter-spacing: 0.02em;
+}
+.unlock-text.soft{
+  color: var(--charcoal-soft);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+}
+
+.unlock-label{
+  font-family: "Shippori Mincho", serif;
+  font-size: 34px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  margin: 0 0 22px;
+  color: var(--charcoal);
+  animation: labelGlow 1800ms ease-in-out infinite alternate;
+}
+@keyframes labelGlow{
+  from{ text-shadow: 0 0 0 rgba(201,169,180,0); }
+  to{ text-shadow: 0 0 22px rgba(201,169,180,0.55); }
+}
+
+#screen-lastprize-unlock.dark-stage{
+  background: radial-gradient(circle at 50% 30%, rgba(120,100,132,0.16), transparent 60%), var(--ivory);
+  transition: background 900ms ease;
+}
+
+/* ---------------- Last prize screen ---------------- */
+
+.lastprize-art{
+  position: relative;
+  width: min(58vw, 230px);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lastPrizeIn 900ms cubic-bezier(.19,.86,.24,1.1) both;
+}
+@keyframes lastPrizeIn{
+  0%{ opacity: 0; transform: scale(0.75) translateY(10px); filter: blur(4px); }
+  100%{ opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+#lastPrizeImg{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 26px rgba(70,58,72,0.22));
+}
+
+.lastprize-fallback{
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #F4E7C8, var(--gold) 62%, var(--gold-deep));
+  box-shadow: 0 18px 30px rgba(150,120,60,0.28), inset 0 2px 10px rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lastprize-fallback-mark{
+  font-family: "Shippori Mincho", serif;
+  font-size: 48px;
+  font-weight: 700;
+  color: #fffaf0;
+  text-shadow: 0 2px 10px rgba(120,90,30,0.35);
+}
+
+#toCompleteBtn{ max-width: 300px; margin-top: 6px; }
+
+/* ---------------- Complete screen ---------------- */
+
+.complete-title{
+  font-family: "Shippori Mincho", serif;
+  font-size: 26px;
+  line-height: 1.5;
+  font-weight: 600;
+  margin: 0;
+  color: var(--charcoal);
+}
+
+.complete-sub{
+  margin: 0;
+  font-size: 14.5px;
+  letter-spacing: 0.08em;
+  color: var(--lavender-deep);
+}
+
+.complete-message{
+  margin: 14px 0 4px;
+  font-size: 16.5px;
+  line-height: 1.9;
+  color: var(--charcoal);
+  padding: 20px 22px;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+}
+
+/* ---------------- Modal ---------------- */
+
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(66, 60, 72, 0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 50;
+  animation: fadeIn 220ms ease both;
+}
+.modal-overlay[hidden]{ display: none; }
+
+@keyframes fadeIn{ from{ opacity: 0; } to{ opacity: 1; } }
+
+.modal-card{
+  width: 100%;
+  max-width: 340px;
+  background: var(--ivory);
+  border-radius: var(--radius-l);
+  padding: 28px 24px 22px;
+  box-shadow: 0 24px 48px rgba(60,50,60,0.28);
+  animation: modalPop 260ms cubic-bezier(.22,.9,.3,1.2) both;
+}
+@keyframes modalPop{
+  from{ opacity: 0; transform: scale(0.92) translateY(8px); }
+  to{ opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-title{
+  margin: 0 0 22px;
+  font-size: 15.5px;
+  line-height: 1.7;
+  text-align: center;
+  color: var(--charcoal);
+}
+
+.modal-actions{
+  display: flex;
+  gap: 10px;
+}
+.modal-actions .btn{ flex: 1; }
+
+/* ---------------- Small screens tuning ---------------- */
+
+@media (max-height: 700px){
+  .wordmark{ font-size: 21px; }
+  .result-number{ font-size: 62px; }
+  .number-reveal-value{ font-size: 48px; }
+}
+
+@media (min-width: 480px){
+  .screen{ padding-left: 24px; padding-right: 24px; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

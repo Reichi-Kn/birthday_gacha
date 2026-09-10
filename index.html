@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Birthday Gacha</title>
+<meta name="theme-color" content="#efe9f4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ 1. ガチャ画面 ============ -->
+  <section class="screen active" id="screen-gacha" aria-label="ガチャ画面">
+    <div class="screen-inner">
+
+      <header class="top-bar">
+        <p class="eyebrow">Happy Birthday</p>
+        <h1 class="wordmark">Birthday Gacha</h1>
+      </header>
+
+      <div class="stage">
+        <div class="gacha-stand" id="gachaStand">
+          <img src="images/gacha.png" alt="ガチャガチャ本体" class="gacha-img" id="gachaImg">
+          <div class="capsule-layer" id="dispenseLayer" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="progress-block">
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-label">
+          <span id="progressCount">0</span><span class="progress-slash">/</span><span id="progressTotal">20</span>
+          <span class="progress-suffix">個</span>
+        </p>
+      </div>
+
+      <button class="btn btn-primary btn-large" id="drawBtn" type="button">
+        ガチャを回す
+      </button>
+
+      <button class="dots-toggle" id="dotsToggle" type="button" aria-expanded="false">
+        引いた番号を見る
+      </button>
+
+      <div class="number-grid" id="numberGrid" hidden></div>
+
+    </div>
+
+    <footer class="foot-link">
+      <button class="link-btn" id="openResetBtn" type="button">はじめから</button>
+    </footer>
+  </section>
+
+  <!-- ============ 2. カプセル演出画面 ============ -->
+  <section class="screen" id="screen-capsule" aria-label="カプセル演出">
+    <div class="screen-inner center-col">
+      <p class="capsule-caption" id="capsuleCaption">カプセルが出てきました</p>
+
+      <div class="capsule-stage">
+        <img src="" alt="カプセル" class="capsule-img capsule-close" id="capsuleCloseImg">
+        <img src="" alt="開いたカプセル" class="capsule-img capsule-open" id="capsuleOpenImg" hidden>
+        <div class="number-reveal" id="numberReveal" hidden>
+          <span class="number-reveal-value" id="numberRevealValue"></span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-large" id="openBtn" type="button" hidden>OPEN</button>
+    </div>
+  </section>
+
+  <!-- ============ 3. 結果画面 ============ -->
+  <section class="screen" id="screen-result" aria-label="結果">
+    <div class="screen-inner center-col">
+      <p class="result-eyebrow">GET</p>
+      <div class="result-number" id="resultNumber">7</div>
+      <p class="result-caption"><span id="resultNumberText">7</span>番のプレゼント</p>
+
+      <div class="progress-block small">
+        <p class="progress-label">
+          <span id="resultProgressCount">0</span><span class="progress-slash">/</span><span id="resultProgressTotal">20</span>
+          <span class="progress-suffix">個</span>
+        </p>
+      </div>
+
+      <button class="btn btn-primary btn-large" id="backToGachaBtn" type="button">
+        もう一度ガチャを回す
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ 4. ラスト賞 解放演出 ============ -->
+  <section class="screen" id="screen-lastprize-unlock" aria-label="ラスト賞解放">
+    <div class="screen-inner center-col unlock-inner">
+      <div class="unlock-step" id="unlockStep1">
+        <p class="unlock-count">20<span class="progress-slash">/</span>20</p>
+        <p class="unlock-text">すべてのプレゼントを<br>GETしました</p>
+      </div>
+      <div class="unlock-step" id="unlockStep2" hidden>
+        <p class="unlock-text soft">そして……</p>
+      </div>
+      <div class="unlock-step" id="unlockStep3" hidden>
+        <p class="unlock-label">LAST PRIZE</p>
+        <button class="btn btn-primary btn-large" id="receiveLastPrizeBtn" type="button">
+          ラスト賞を受け取る
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. ラスト賞画面 ============ -->
+  <section class="screen" id="screen-lastprize" aria-label="ラスト賞">
+    <div class="screen-inner center-col">
+      <p class="result-eyebrow">LAST PRIZE</p>
+      <div class="lastprize-art" id="lastPrizeArt">
+        <img src="images/last_prize.png" alt="ラスト賞" id="lastPrizeImg" hidden>
+        <div class="lastprize-fallback" id="lastPrizeFallback">
+          <span class="lastprize-fallback-mark">21</span>
+        </div>
+      </div>
+      <p class="result-caption">21個目のプレゼント</p>
+
+      <button class="btn btn-primary btn-large" id="toCompleteBtn" type="button">
+        つぎへ
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ 6. コンプリート画面 ============ -->
+  <section class="screen" id="screen-complete" aria-label="コンプリート">
+    <div class="screen-inner center-col">
+      <p class="result-eyebrow">COMPLETE</p>
+      <h2 class="complete-title">20個のプレゼント<br>コンプリート</h2>
+      <p class="unlock-text soft">そして……</p>
+      <p class="complete-sub">21個目のプレゼント　LAST PRIZE</p>
+
+      <p class="complete-message" id="completeMessage"></p>
+
+      <button class="link-btn" id="openResetBtn2" type="button">はじめから</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ リセット確認モーダル ============ -->
+<div class="modal-overlay" id="resetModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle">
+    <p class="modal-title" id="resetModalTitle">これまでの記録を削除して<br>最初からやり直しますか？</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="resetCancelBtn" type="button">いいえ</button>
+      <button class="btn btn-primary" id="resetConfirmBtn" type="button">はい</button>
+    </div>
+  </div>
+</div>
+
+<audio id="sndGacha" preload="none"><source src="sounds/gacha.mp3" type="audio/mpeg"></audio>
+<audio id="sndCapsule" preload="none"><source src="sounds/capsule.mp3" type="audio/mpeg"></audio>
+<audio id="sndOpen" preload="none"><source src="sounds/open.mp3" type="audio/mpeg"></audio>
+<audio id="sndLastPrize" preload="none"><source src="sounds/last-prize.mp3" type="audio/mpeg"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>
