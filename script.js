@@ -18,10 +18,10 @@ const CONFIG = {
   // blue / purple は今回追加。初期値0なので、従来の確率は変わりません。
   // blue / purple もランダム抽選に含めたい場合は、0より大きい値に変更してください。
   rankWeights: {
-    green: 50,  // 緑カプセル
-    blue: 20,    // 青カプセル
-    red: 15,    // 赤カプセル
-    purple: 12,  // 紫カプセル
+    green: 55,  // 緑カプセル
+    blue: 20,    // 青カプセル（使う場合は例：10）
+    red: 13,    // 赤カプセル
+    purple: 9,  // 紫カプセル（使う場合は例：10）
     gold: 3,   // 金カプセル
   },
 
@@ -39,10 +39,10 @@ const CONFIG = {
     5: "green",
     6: "green",
     7: "green",
-    8: "green",
+    8: "blue",
     9: "blue",
     10: "blue",
-    11: "blue",
+    11: "red",
     12: "red",
     13: "red",
     14: "red",
@@ -80,7 +80,7 @@ const CONFIG = {
 
   // 表示テキスト（後から変更しやすいようにここにまとめています）
   text: {
-    completeMessage: "21歳の誕生日おめでとう。",
+    completeMessage: "HAPPY BIRTHDAY",
   },
 
   // 演出タイミング(ms) — 必要に応じて微調整可
