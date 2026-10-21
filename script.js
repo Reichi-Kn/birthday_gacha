@@ -118,6 +118,11 @@ function remainingNumbers(){
   return all;
 }
 
+// 全部引き終わったかどうか
+function isAllDrawn(){
+  return state.drawnOrder.length >= CONFIG.totalCount;
+}
+
 // 番号ごとのランクを決定します。
 // numberRankOverrides に指定があればそれを優先し、無ければ確率抽選します。
 function rankForNumber(number){
@@ -179,7 +184,7 @@ function playSound(id){
 }
 
 /* =========================================================
-   進捗表示・番号グリッドの更新
+   進捗表示・番号グリッド・ホームのボタン切り替え
    ========================================================= */
 function updateProgressUI(){
   const count = state.drawnOrder.length;
@@ -190,6 +195,11 @@ function updateProgressUI(){
   $("resultProgressCount").textContent = count;
   $("resultProgressTotal").textContent = total;
   $("progressFill").style.width = `${(count / total) * 100}%`;
+
+  // 20個引き終わったら「ガチャを回す」を隠して「ラスト賞」ボタンを出す
+  const allDrawn = isAllDrawn();
+  $("drawBtn").hidden = allDrawn;
+  $("lastPrizeBtn").hidden = !allDrawn;
 
   renderNumberGrid();
 }
@@ -341,13 +351,9 @@ $("openBtn").addEventListener("click", () => {
   }, CONFIG.timing.openFadeOut);
 });
 
+// 20個目でも通常どおり結果画面へ進む（ラスト賞はホームのボタンから）
 function afterNumberRevealed(){
-  const isLast = state.drawnOrder.length >= CONFIG.totalCount;
-  if(isLast){
-    enterLastPrizeUnlockSequence();
-  }else{
-    enterResultScreen(currentDraw);
-  }
+  enterResultScreen(currentDraw);
 }
 
 /* =========================================================
@@ -366,7 +372,11 @@ $("backToGachaBtn").addEventListener("click", () => {
 /* =========================================================
    ラスト賞 解放演出
    ========================================================= */
-function enterLastPrizeUnlockSequence(skipAnimation){
+$("lastPrizeBtn").addEventListener("click", () => {
+  enterLastPrizeUnlockSequence();
+});
+
+function enterLastPrizeUnlockSequence(){
   const step1 = $("unlockStep1");
   const step2 = $("unlockStep2");
   const step3 = $("unlockStep3");
@@ -379,11 +389,10 @@ function enterLastPrizeUnlockSequence(skipAnimation){
 
   showScreen("lastPrizeUnlock");
 
-  if(skipAnimation || state.lastPrizeUnlocked){
+  // すでに一度演出を見ている場合は、演出を飛ばして受け取りボタンを表示
+  if(state.lastPrizeUnlocked){
     step3.hidden = false;
     stage.classList.add("dark-stage");
-    state.lastPrizeUnlocked = true;
-    saveState();
     return;
   }
 
@@ -484,17 +493,7 @@ function init(){
     return;
   }
 
-  if(state.drawnOrder.length >= CONFIG.totalCount){
-    // 20個引き終わっている: リロード後はアニメーションを省略して
-    // ラスト賞受け取りへ進めるようにする
-    if(state.lastPrizeUnlocked){
-      enterLastPrizeUnlockSequence(true);
-    }else{
-      enterLastPrizeUnlockSequence(false);
-    }
-    return;
-  }
-
+  // 20個引き終わっていても、ホーム（ラスト賞ボタン付き）から再開する
   showScreen("gacha");
 }
 
