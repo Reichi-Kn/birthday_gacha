@@ -483,6 +483,30 @@ $("resetModal").addEventListener("click", (e) => {
 });
 
 /* =========================================================
+   【開発用】19個まで引いたことにする
+   本番前にこのブロックと index.html のボタン、style.css の .dev-btn を削除してください
+   ========================================================= */
+$("devFillBtn").addEventListener("click", () => {
+  const target = CONFIG.totalCount - 1; // 19個
+
+  // まだ引いていない番号をシャッフル
+  const remaining = remainingNumbers();
+  for(let i = remaining.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+  }
+
+  // 19個になるまで追加(すでに19個以上なら何もしない)
+  while(state.drawnOrder.length < target && remaining.length > 0){
+    const number = remaining.pop();
+    state.drawnOrder.push({ number, rank: rankForNumber(number) });
+  }
+
+  saveState();
+  updateProgressUI();
+});
+
+/* =========================================================
    起動時の復元
    ========================================================= */
 function init(){
