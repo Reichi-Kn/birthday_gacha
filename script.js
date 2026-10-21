@@ -36,6 +36,8 @@ const CONFIG = {
     gold_close: "images/gold_close.png",
     gold_open: "images/gold_open.png",
     last_prize: "images/last_prize.png",
+    platinum_close: "images/platinum_close.png",
+    platinum_open: "images/platinum_open.png",
   },
 
   sounds: {
@@ -362,19 +364,52 @@ function afterNumberRevealed(){
 function enterResultScreen(draw){
   $("resultNumber").textContent = draw.number;
   $("resultNumberText").textContent = draw.number;
+  const isLastPrize = !!draw.isLastPrize;
+  $("resultNumberText").parentElement.innerHTML = isLastPrize
+    ? '<span id="resultNumberText">21</span>番目のプレゼント（ラスト賞）'
+    : '<span id="resultNumberText">' + draw.number + '</span>番のプレゼント';
+  $("resultNumberText").textContent = draw.number;
+  $("resultProgressCount").textContent = state.drawnOrder.length;
+  $("resultProgressTotal").textContent = CONFIG.totalCount;
+  document.querySelector("#screen-result .result-eyebrow").textContent = isLastPrize ? "LAST PRIZE" : "GET";
+  $("backToGachaBtn").textContent = isLastPrize ? "つぎへ" : "ホームに戻る";
   showScreen("result");
 }
 
 $("backToGachaBtn").addEventListener("click", () => {
+  if(currentDraw && currentDraw.isLastPrize){
+    state.lastPrizeReceived = true;
+    saveState();
+    enterCompleteScreen();
+    return;
+  }
   showScreen("gacha");
 });
 
 /* =========================================================
    ラスト賞 解放演出
    ========================================================= */
-$("lastPrizeBtn").addEventListener("click", () => {
-  enterLastPrizeUnlockSequence();
-});
+$("lastPrizeBtn").addEventListener("click", onLastPrizeTapped);
+
+// ラスト賞も通常ガチャと同じ流れで、プラチナカプセルから21番を出す
+function onLastPrizeTapped(){
+  if(!isAllDrawn() || state.lastPrizeReceived) return;
+  const drawBtn = $("lastPrizeBtn");
+  drawBtn.disabled = true;
+  currentDraw = { number: 21, rank: "platinum", isLastPrize: true };
+
+  playSound("sndGacha");
+  const stand = $("gachaStand");
+  stand.classList.add("shaking");
+
+  setTimeout(() => {
+    stand.classList.remove("shaking");
+    dispenseCapsuleVisual("platinum", () => {
+      drawBtn.disabled = false;
+      enterCapsuleScreen(currentDraw);
+    });
+  }, CONFIG.timing.shake);
+}
 
 function enterLastPrizeUnlockSequence(){
   const step1 = $("unlockStep1");
