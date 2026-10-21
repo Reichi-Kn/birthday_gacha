@@ -467,7 +467,9 @@ function closeResetModal(){
 }
 
 $("openResetBtn").addEventListener("click", openResetModal);
-$("openResetBtn2").addEventListener("click", openResetModal);
+$("backToHomeBtn").addEventListener("click", () => {
+  showScreen("gacha");
+});
 $("resetCancelBtn").addEventListener("click", closeResetModal);
 
 $("resetConfirmBtn").addEventListener("click", () => {
