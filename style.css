@@ -615,6 +615,8 @@ img{ -webkit-user-drag: none; user-select: none; }
   color: var(--lavender-deep);
 }
 
+#backToHomeBtn{ max-width: 300px; margin-top: 6px; }
+
 .complete-message{
   margin: 14px 0 4px;
   font-size: 16.5px;
