@@ -277,6 +277,23 @@ img{ -webkit-user-drag: none; user-select: none; }
 }
 .btn-ghost:active{ transform: translateY(1px) scale(0.99); }
 
+.btn-lastprize{
+  background: linear-gradient(180deg, #E0C58C, var(--gold-deep));
+  color: #FFFDFB;
+  box-shadow: 0 10px 20px rgba(150, 120, 60, 0.30), inset 0 1px 0 rgba(255,255,255,0.4);
+  animation: lastPrizePulse 2200ms ease-in-out infinite;
+}
+.btn-lastprize:active{
+  transform: translateY(1px) scale(0.99);
+}
+.btn-lastprize[hidden]{ display: none; }
+.btn[hidden]{ display: none; }
+
+@keyframes lastPrizePulse{
+  0%,100%{ box-shadow: 0 10px 20px rgba(150,120,60,0.30), 0 0 0 0 rgba(201,169,110,0.0), inset 0 1px 0 rgba(255,255,255,0.4); }
+  50%{ box-shadow: 0 10px 20px rgba(150,120,60,0.30), 0 0 0 8px rgba(201,169,110,0.18), inset 0 1px 0 rgba(255,255,255,0.4); }
+}
+
 .link-btn{
   appearance: none;
   border: none;
