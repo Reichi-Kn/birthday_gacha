@@ -693,3 +693,8 @@ img{ -webkit-user-drag: none; user-select: none; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 開発用ボタンは画面上では非表示にする（JavaScriptの機能は残す） */
+.dev-btn{
+  display: none !important;
+}
