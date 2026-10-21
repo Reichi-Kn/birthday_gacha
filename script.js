@@ -190,18 +190,19 @@ function playSound(id){
    ========================================================= */
 function updateProgressUI(){
   const count = state.drawnOrder.length;
-  const total = CONFIG.totalCount;
+  const total = CONFIG.totalCount + 1; // 通常20個 + ラスト賞21番
+  const progressCount = count + (state.lastPrizeReceived ? 1 : 0);
 
-  $("progressCount").textContent = count;
+  $("progressCount").textContent = progressCount;
   $("progressTotal").textContent = total;
-  $("resultProgressCount").textContent = count;
+  $("resultProgressCount").textContent = progressCount;
   $("resultProgressTotal").textContent = total;
-  $("progressFill").style.width = `${(count / total) * 100}%`;
+  $("progressFill").style.width = `${(progressCount / total) * 100}%`;
 
-  // 20個引き終わったら「ガチャを回す」を隠して「ラスト賞」ボタンを出す
+  // 通常20個を引き終えたらラスト賞ボタンを表示。ラスト賞受取後は非表示。
   const allDrawn = isAllDrawn();
   $("drawBtn").hidden = allDrawn;
-  $("lastPrizeBtn").hidden = !allDrawn;
+  $("lastPrizeBtn").hidden = !allDrawn || state.lastPrizeReceived;
 
   renderNumberGrid();
 }
@@ -369,10 +370,10 @@ function enterResultScreen(draw){
     ? '<span id="resultNumberText">21</span>番目のプレゼント（ラスト賞）'
     : '<span id="resultNumberText">' + draw.number + '</span>番のプレゼント';
   $("resultNumberText").textContent = draw.number;
-  $("resultProgressCount").textContent = state.drawnOrder.length;
-  $("resultProgressTotal").textContent = CONFIG.totalCount;
+  $("resultProgressCount").textContent = state.drawnOrder.length + (isLastPrize ? 1 : (state.lastPrizeReceived ? 1 : 0));
+  $("resultProgressTotal").textContent = CONFIG.totalCount + 1;
   document.querySelector("#screen-result .result-eyebrow").textContent = isLastPrize ? "LAST PRIZE" : "GET";
-  $("backToGachaBtn").textContent = isLastPrize ? "つぎへ" : "ホームに戻る";
+  $("backToGachaBtn").textContent = isLastPrize ? "Complete" : "ホームに戻る";
   showScreen("result");
 }
 
@@ -380,6 +381,7 @@ $("backToGachaBtn").addEventListener("click", () => {
   if(currentDraw && currentDraw.isLastPrize){
     state.lastPrizeReceived = true;
     saveState();
+    updateProgressUI();
     enterCompleteScreen();
     return;
   }
@@ -480,6 +482,7 @@ function enterLastPrizeScreen(){
 $("toCompleteBtn").addEventListener("click", () => {
   state.lastPrizeReceived = true;
   saveState();
+  updateProgressUI();
   enterCompleteScreen();
 });
 
