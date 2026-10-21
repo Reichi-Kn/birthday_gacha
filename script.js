@@ -7,24 +7,51 @@ const CONFIG = {
   // プレゼント（番号）の総数。20個以外にしたい場合はここを変更します。
   totalCount: 20,
 
-  // 各ランクの「出やすさ」の重み。
-  // 実際の確率 = その値 ÷ 合計値 になります（合計は100でなくてOK）。
-  // 例: green:60, red:30, gold:10 → GREEN60% / RED30% / GOLD10%
-  // ランクの種類を増減したい場合は、この中に行を足したり消したりできます
-  // （例えば "silver" を追加する場合は、silver_close.png / silver_open.png も
-  // images フォルダに用意し、CONFIG.images にもパスを追記してください）。
+  // =======================================================
+  // 色の設定（ここだけ編集すればOK）
+  // =======================================================
+
+  // ① 色ごとの抽選ウェイト
+  // 「random」に設定した番号だけ、この比率で色が決まります。
+  // 数字は確率そのものではなく、比率です。合計100でなくてもOK。
+  // 例：green: 60, red: 30, gold: 10 → 60% / 30% / 10%
+  // blue / purple は今回追加。初期値0なので、従来の確率は変わりません。
+  // blue / purple もランダム抽選に含めたい場合は、0より大きい値に変更してください。
   rankWeights: {
-    green: 60,
-    red: 30,
-    gold: 10,
+    green: 60,  // 緑カプセル
+    red: 30,    // 赤カプセル
+    gold: 10,   // 金カプセル
+    blue: 0,    // 青カプセル（使う場合は例：10）
+    purple: 0,  // 紫カプセル（使う場合は例：10）
   },
 
-  // 特定の番号だけランクを固定したい場合はここに追加します。
-  // ここに書いた番号は必ず指定したランクで出ます（確率抽選の対象外）。
-  // 書いていない番号は、上の rankWeights の確率で抽選されます。
-  // 例:「7番は必ずGOLDにしたい」→ 7: "gold",
-  numberRankOverrides: {
-    // 7: "gold",
+  // ② 番号ごとの色を指定
+  // 1〜20番それぞれを "green" / "red" / "gold" / "blue" / "purple" / "random" から選びます。
+  // 固定したい番号は色名、確率で決めたい番号は "random" にします。
+  // 例：3番を必ず金にする → 3: "gold"
+  // 例：4番をウェイトに従って抽選 → 4: "random"
+  // ※ここは通常の1〜20番だけ。21番のプラチナはラスト賞として別枠です。
+  numberRankAssignments: {
+    1: "random",
+    2: "random",
+    3: "random",
+    4: "random",
+    5: "random",
+    6: "random",
+    7: "random",
+    8: "random",
+    9: "random",
+    10: "random",
+    11: "random",
+    12: "random",
+    13: "random",
+    14: "random",
+    15: "random",
+    16: "random",
+    17: "random",
+    18: "random",
+    19: "random",
+    20: "random",
   },
 
   images: {
@@ -35,6 +62,10 @@ const CONFIG = {
     red_open: "images/red_open.png",
     gold_close: "images/gold_close.png",
     gold_open: "images/gold_open.png",
+    blue_close: "images/blue_close.png",
+    blue_open: "images/blue_open.png",
+    purple_close: "images/purple_close.png",
+    purple_open: "images/purple_open.png",
     last_prize: "images/last_prize.png",
     platinum_close: "images/platinum_close.png",
     platinum_open: "images/platinum_open.png",
@@ -125,11 +156,10 @@ function isAllDrawn(){
   return state.drawnOrder.length >= CONFIG.totalCount;
 }
 
-// 番号ごとのランクを決定します。
-// numberRankOverrides に指定があればそれを優先し、無ければ確率抽選します。
+// 番号ごとの色を決定。色名が指定されていれば固定、"random" ならウェイト抽選。
 function rankForNumber(number){
-  const fixed = CONFIG.numberRankOverrides[number];
-  if(fixed) return fixed;
+  const assignment = CONFIG.numberRankAssignments[number];
+  if(assignment && assignment !== "random") return assignment;
   return pickRank();
 }
 
