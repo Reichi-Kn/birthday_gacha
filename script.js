@@ -18,11 +18,11 @@ const CONFIG = {
   // blue / purple は今回追加。初期値0なので、従来の確率は変わりません。
   // blue / purple もランダム抽選に含めたい場合は、0より大きい値に変更してください。
   rankWeights: {
-    green: 60,  // 緑カプセル
-    red: 30,    // 赤カプセル
-    gold: 10,   // 金カプセル
-    blue: 0,    // 青カプセル（使う場合は例：10）
-    purple: 0,  // 紫カプセル（使う場合は例：10）
+    green: 50,  // 緑カプセル
+    blue: 20,    // 青カプセル
+    red: 15,    // 赤カプセル
+    purple: 12,  // 紫カプセル
+    gold: 3,   // 金カプセル
   },
 
   // ② 番号ごとの色を指定
@@ -32,26 +32,26 @@ const CONFIG = {
   // 例：4番をウェイトに従って抽選 → 4: "random"
   // ※ここは通常の1〜20番だけ。21番のプラチナはラスト賞として別枠です。
   numberRankAssignments: {
-    1: "random",
-    2: "random",
-    3: "random",
-    4: "random",
-    5: "random",
-    6: "random",
-    7: "random",
-    8: "random",
-    9: "random",
-    10: "random",
-    11: "random",
-    12: "random",
-    13: "random",
-    14: "random",
-    15: "random",
-    16: "random",
-    17: "random",
-    18: "random",
-    19: "random",
-    20: "random",
+    1: "green",
+    2: "green",
+    3: "green",
+    4: "green",
+    5: "green",
+    6: "green",
+    7: "green",
+    8: "green",
+    9: "blue",
+    10: "blue",
+    11: "blue",
+    12: "red",
+    13: "red",
+    14: "red",
+    15: "red",
+    16: "purple",
+    17: "purple",
+    18: "purple",
+    19: "purple",
+    20: "gold",
   },
 
   images: {
